@@ -9,7 +9,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WaiterController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\CashRegisterController;
-
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,24 +22,27 @@ use App\Http\Controllers\CashRegisterController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::resource('tables', TableController::class );
-Route::resource('products', ProductController::class );
-Route::resource('chefs', ChefController::class);
-Route::resource('orders', OrderController::class);
-Route::resource('waiters', WaiterController::class);
-Route::resource('bills', BillController::class);
-Route::resource('cash-registers', CashRegisterController::class);
+
+Route::resource('roles', RoleController::class);
 
 
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    Route::apiResource('tables', TableController::class);
-    Route::apiResource('orders', OrderController::class);
-    Route::apiResource('waiters', WaiterController::class);
-    Route::apiResource('bills', BillController::class);
-    Route::apiResource('cash-registers', CashRegisterController::class);
+//Route::resource('products', ProductController::class);
 
 
+Route::post('/register', [UserController::class, 'register']);
 
-    return $request->user();
+// Definimos las rutas del CRUD de asistentes bajo el middleware de autenticación
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('tables', TableController::class);
+    Route::resource('products', ProductController::class);
+
+    Route::resource('chefs', ChefController::class);
+    Route::resource('orders', OrderController::class);
+    Route::resource('waiters', WaiterController::class);
+    Route::resource('bills', BillController::class);
+    Route::resource('cash-registers', CashRegisterController::class);
+    Route::resource('roles', RoleController::class);
+    Route::post('/logout', [UserController::class, 'logout']);
 });
+
+Route::post('/login', [UserController::class, 'login'])->name('login');
